@@ -1,3 +1,8 @@
+#include <SPI.h>
+#include <Arduino.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_PCD8544.h>
+
 /*
  * Definicoes para uso do LCD
  */
@@ -26,7 +31,7 @@ Adafruit_PCD8544 display = Adafruit_PCD8544(P8544_CLK, P8544_DIN, P8544_DC, P854
 /*Display*/
 void turnONDisplay(); // Energiza pino do Display
 void initDisplay();   // Envia comando de inicializacao ao Display
-
+void turnOFFDisplay();
 /*
  * Funcoes auxiliares do DISPLAY
  */
