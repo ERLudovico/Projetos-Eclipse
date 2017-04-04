@@ -17,7 +17,6 @@ void setup() {
 	    /* Ajuste Vcc do Display*/
 	    turnONDisplay(); // Energiza pino do Display
 	    initDisplay();   // Envia comando de inicializacao ao Display
-
 	  }
 
 }
