@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #define WLED	13
+int linux = 0;
 
 void setup()
 {
@@ -9,7 +10,7 @@ void setup()
 void loop()
 {
   digitalWrite(WLED, HIGH);  // set the LED on
-  delay(3333);               // wait for a second
+  delay(200);               // wait for a second
   digitalWrite(WLED, LOW);   // set the LED off
-  delay(4444);               // wait for a second
+  delay(2000);               // wait for a second
 }
