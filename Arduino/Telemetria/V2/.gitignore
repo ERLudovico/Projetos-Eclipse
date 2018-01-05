@@ -4,6 +4,14 @@
 .cproject
 .travis.yml
 .project
+-.d
 platformio.ini
-build/
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.d
+*.cpp.o
 

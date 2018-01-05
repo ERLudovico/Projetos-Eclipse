@@ -3,5 +3,7 @@
 .settings
 .cproject
 .travis.yml
+.project
 platformio.ini
+build/
 
