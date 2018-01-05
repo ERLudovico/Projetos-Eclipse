@@ -17,7 +17,7 @@ void loop() {
 	servo.moveToDegrees(45);
 	delay(500);
 	digitalWrite(LED_BUILTIN, LOW);
-	delay(1000);
+	delay(500);
 	servo.moveToDegrees(120);
 	servo.update();
 }
