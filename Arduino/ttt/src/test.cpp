@@ -9,7 +9,7 @@ void setup()
 void loop()
 {
   digitalWrite(WLED, HIGH);  // set the LED on
-  delay(1000);               // wait for a second
+  delay(3333);               // wait for a second
   digitalWrite(WLED, LOW);   // set the LED off
-  delay(1000);               // wait for a second
+  delay(4444);               // wait for a second
 }
