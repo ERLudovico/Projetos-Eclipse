@@ -1,0 +1,7 @@
+.pioenvs
+.piolibdeps
+.settings
+.cproject
+.travis.yml
+platformio.ini
+
