@@ -3,16 +3,17 @@
 #define cellPin1 A2
 #define cellPin2 A3
 #define cellPin3 A6
-#define NumAmostras 100
+#define NumAmostras 10
 
 /*
  * Veriaveis
  */
 
-
+int qtCell = 0 ;
 byte pinCell[] 			= {   A0,    A2,    A3,    A6 } ;
-float volCell[] 		= { 0.00,  0.00,  0.00,  0.00 } ;
-float volCellOffset[] 	= { 0.00, 11.68, 11.15, 11.45 } ;
+float volCell[] 		= { 0.00,  0.00,  0.00,  0.00, 0,00 } ;
+float volCellOffset[] 	= { 0.00, 11.72, 10.90, 11.05 } ;
+String serialTrain ;
 
 /*
  * Declarando funcoes
@@ -32,19 +33,37 @@ void loop() {
 }
 
 void getVolCellPin(){
+	qtCell = 1 ;
 	for (int c=1; c<=3 ;c++){
 		float tempVolt = 0.00 ;
 		for (int i=0; i<NumAmostras; i++){
-			tempVolt += (analogRead(pinCell[c]) * (5.0 / 1023.0) );
+			tempVolt += (analogRead(pinCell[c]) * (5.015 / 1023.0) );
 		}
 		tempVolt = tempVolt / NumAmostras ;
 		volCell[c] = tempVolt * volCellOffset[c] ;
 	}
 
+	volCell[2] = ( volCell[2] - volCell[1]);
+	volCell[3] = ( volCell[3] - volCell[2] - volCell[1]);
 
-	volCell[4]  = volCell[3];
-	volCell[3] -= volCell[2];
-	volCell[2] -= volCell[1];
+	//volCell[4]  = volCell[3];
+
+	//volCell[3] -= volCell[2];
+	//volCell[2] -= volCell[1];
+
+	if ( volCell[2] >= 3 ){
+		qtCell = 2 ;
+		if ( volCell[3] >= 3 ){
+			qtCell = 3 ;
+		} else {
+			volCell[3] = 0.00 ;
+		}
+	} else {
+		volCell[2] = 0.00 ;
+		volCell[3] = 0.00 ;
+	}
+
+	volCell[4] = ( volCell[3] + volCell[2] + volCell[1]);
 
 }
 
@@ -52,7 +71,7 @@ void getVolCellPin(){
 void sendSerialMessage(){
 
 	Serial.print("<");
-	Serial.print("2");
+	Serial.print(qtCell);
 	Serial.print(",");
 	Serial.print(volCell[1]);
 	Serial.print(",");
