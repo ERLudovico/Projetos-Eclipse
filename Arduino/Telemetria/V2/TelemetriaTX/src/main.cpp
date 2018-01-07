@@ -39,7 +39,7 @@ void setup() {
 void loop() {
 	timet = micros();
 	if (enterFunction == true){
-		previousTime= timet;
+		previousTime = timet;
 		getVolCellPin();
 		sendSerialMessage();
 	}
@@ -49,7 +49,7 @@ void loop() {
 
 void setTimet(){
   if (timet - previousTime < _DELAY_){
-	enterFunction= false;
+	enterFunction = false;
   }  else {
 	enterFunction= true;
   }
