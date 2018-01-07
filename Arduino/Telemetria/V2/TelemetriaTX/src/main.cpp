@@ -11,6 +11,10 @@
 
 int qtCell = 0 ;
 byte pinCell[] 			= {   A0,    A2,    A3,    A6 } ;
+float volCell1 = 0.00;
+float volCell2 = 0.00;
+float volCell3 = 0.00;
+float volCellT = 0.00;
 float volCell[] 		= { 0.00,  0.00,  0.00,  0.00, 0,00 } ;
 float volCellOffset[] 	= { 0.00, 11.72, 10.90, 11.05 } ;
 String serialTrain ;
@@ -43,42 +47,40 @@ void getVolCellPin(){
 		volCell[c] = tempVolt * volCellOffset[c] ;
 	}
 
-	volCell[2] = ( volCell[2] - volCell[1]);
-	volCell[3] = ( volCell[3] - volCell[2] - volCell[1]);
+	volCellT = volCell[3] ;
+	volCell1 = volCell[1];
+	volCell2 = ( volCell[2] - volCell[1] );
+	volCell3 = ( volCellT - volCell2 - volCell1 ) ;
 
-	//volCell[4]  = volCell[3];
-
-	//volCell[3] -= volCell[2];
-	//volCell[2] -= volCell[1];
-
-	if ( volCell[2] >= 3 ){
-		qtCell = 2 ;
-		if ( volCell[3] >= 3 ){
-			qtCell = 3 ;
-		} else {
-			volCell[3] = 0.00 ;
-		}
+	if (volCell2 <= 3.00){
+		volCell2 = 0.00 ;
+		volCell3 = 0.00 ;
 	} else {
-		volCell[2] = 0.00 ;
-		volCell[3] = 0.00 ;
+		qtCell = 2 ;
+
+		if (volCell3 <= 3.00) {
+			volCell3 = 0.00 ;
+		} else {
+			qtCell = 3 ;
+		}
+
 	}
-
-	volCell[4] = ( volCell[3] + volCell[2] + volCell[1]);
-
 }
 
 
 void sendSerialMessage(){
 
+	//String serialMessage[] = {"<", qtCell , "," ,volCell1 ","};
 	Serial.print("<");
 	Serial.print(qtCell);
 	Serial.print(",");
-	Serial.print(volCell[1]);
+	Serial.print(volCell1);
 	Serial.print(",");
-	Serial.print(volCell[2]);
+	Serial.print(volCell2);
 	Serial.print(",");
-	Serial.print(volCell[3]);
+	Serial.print(volCell3);
 	Serial.print(",");
-	Serial.print(volCell[4]);
+	Serial.print(volCellT);
 	Serial.println(">");
+
 }
