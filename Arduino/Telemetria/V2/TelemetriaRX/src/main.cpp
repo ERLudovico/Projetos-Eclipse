@@ -1,64 +1,99 @@
 #include <Arduino.h>
 
 
-
+void blickLED(int);
 void parseData();
-void showParsedData();
+void debugParsedData();
+void validaComunicacao();
 void recvWithStartEndMarkers();
 
 const byte numChars = 32;
 char receivedChars[numChars];
-char tempChars[numChars];        // temporary array for use when parsing
+char tempChars[numChars];
 
-      // variables to hold the parsed data
-char messageFromPC[numChars] = {0};
-int integerFromPC = 0;
-float floatFromPC = 0.0;
+// variables to hold the parsed data
+//char messageFromTX[numChars] = {0};
 
 boolean newData = false;
+boolean ledRXLOW = true ;
 
 int qtCell = 0 ;
 float voltCell[] = { 0.00, 0.00, 0.00 ,0.00};
 float voltCellT = 0.00;
 
+static char CARAC_INICIO = '<' ;
+static char CARAC_FIM    = '>' ;
+
+
+
+float seno;
+int frequencia;
+
+
+
+int comunFailedCount = 0 ;
+
+// Variaves do timet
+unsigned long timet;
+boolean enterFunction = true;
+unsigned long previousTime;
 
 //============
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("This demo expects 3 pieces of data - text, an integer and a floating point value");
-    Serial.println("Enter data in this style <HelloWorld, 12, 24.7>  ");
-    Serial.println();
+    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(9,OUTPUT);
 }
 
 //============
 
 void loop() {
+	timet = millis();
+	validaComunicacao();
     recvWithStartEndMarkers();
+    //blickLED();
     if (newData == true) {
+        blickLED(10);
         strcpy(tempChars, receivedChars);
-            // this temporary copy is necessary to protect the original data
-            //   because strtok() used in parseData() replaces the commas with \0
         parseData();
-        showParsedData();
+        debugParsedData();
         newData = false;
     }
+
 }
 
 //============
 
+void validaComunicacao(){
+	if (comunFailedCount > 1000) {
+//		Serial.print(comunFailedCount);
+//		tone(9,400);
+//		delay(500);
+//		noTone(9);
+
+//		for(int x=0;x<180;x++){
+//		  //converte graus para radiando e depois obtém o valor do seno
+//		  seno=(sin(x*3.1416/180));
+//		  //gera uma frequência a partir do valor do seno
+//		  frequencia = 2000+(int(seno*1000));
+//		  tone(9,frequencia);
+//		  delay(2);
+//		}
+	}
+}
+
 void recvWithStartEndMarkers() {
     static boolean recvInProgress = false;
     static byte ndx = 0;
-    char startMarker = '<';
-    char endMarker = '>';
     char rc;
+    comunFailedCount++ ;
 
     while (Serial.available() > 0 && newData == false) {
         rc = Serial.read();
 
         if (recvInProgress == true) {
-            if (rc != endMarker) {
+            if (rc != CARAC_FIM) {
                 receivedChars[ndx] = rc;
                 ndx++;
                 if (ndx >= numChars) {
@@ -70,13 +105,34 @@ void recvWithStartEndMarkers() {
                 recvInProgress = false;
                 ndx = 0;
                 newData = true;
+                comunFailedCount = 0 ;
             }
-        }
-
-        else if (rc == startMarker) {
+        } else if (rc == CARAC_INICIO) {
             recvInProgress = true;
         }
     }
+}
+
+int finalTime = 0;
+int agora = 0 ;
+
+void blickLED(int _TIME_){
+
+//	if (ledRXLOW == true){
+//		digitalWrite(LED_BUILTIN, HIGH);
+//		ledRXLOW = false;
+//		finalTime = 5000 + millis();
+//	} else {
+//		agora = millis();
+//		if ( agora >= finalTime){
+//			digitalWrite(LED_BUILTIN, LOW);
+//			ledRXLOW = true;
+//		}
+//	}
+	digitalWrite(LED_BUILTIN, HIGH);
+	delay(_TIME_);
+	digitalWrite(LED_BUILTIN, LOW);
+
 }
 
 //============
@@ -115,16 +171,20 @@ void parseData() {      // split the data into its parts
 
 //============
 
-void showParsedData() {
-    Serial.print("Message ");
-    Serial.println(qtCell);
-    Serial.print("Vol 1: ");
-    Serial.println(voltCell[1]);
-    Serial.print("Vol 2: ");
-    Serial.println(voltCell[2]);
-    Serial.print("Vol 3: ");
-    Serial.println(voltCell[3]);
-    Serial.print("Vol Total: ");
-    Serial.println(voltCellT);
+void debugParsedData() {
+	Serial.print("RX ");
+    Serial.print(CARAC_INICIO);
+    Serial.print(",");
+    Serial.print(qtCell);
+    Serial.print(",");
+    Serial.print(voltCell[1]);
+    Serial.print(",");
+    Serial.print(voltCell[2]);
+    Serial.print(",");
+    Serial.print(voltCell[3]);
+    Serial.print(",");
+    Serial.print(voltCellT);
+    Serial.println(CARAC_FIM);
+
 
 }
