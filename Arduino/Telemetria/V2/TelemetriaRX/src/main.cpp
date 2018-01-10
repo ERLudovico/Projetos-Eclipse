@@ -13,6 +13,7 @@ void blickLED(int);
 void parseData();
 void debugParsedData();
 void displayOLEDData();
+void validaBateria();
 void validaComunicacao();
 void recvWithStartEndMarkers();
 void generateMockValues();
@@ -43,12 +44,22 @@ boolean blinkON = false ;
 
 int comunFailedCount = 0 ;
 unsigned long timet;
-unsigned long previousTime;
+unsigned long previousTimeBlinkON;
+unsigned long previousTimeCounterMock;
+unsigned long previousTimeCheckConnection;
+unsigned long previousTimeCheckBateria;
 
-boolean enterFunction = true;
+boolean enterFuncBlinkON = true;
+boolean enterFuncCounterMock = true ;
+boolean enterFuncCheckConnection = true ;
+boolean enterFuncCheckBateria = true ;
+
 // Variaveis debug
-//boolean debugOLED = false;
+boolean debugOLED = false;
 
+float voltCellTMOCK = 12.70 ;
+
+boolean batFraca = false ;
 //============
 
 void setup() {
@@ -64,47 +75,97 @@ void setup() {
 //============
 
 void loop() {
-	//timet = micros();
-	//previousTime = timet;
-	//validaComunicacao();
-    //if (debugOLED) {
-    //	generateMockValues();
-    //} else {
-	recvWithStartEndMarkers();
-	if (newData == true) {
-		blickLED(10);
-		strcpy(tempChars, receivedChars);
-		parseData();
-		debugParsedData();
-		newData = false;
-	}
-    //}
+	timet = micros();
+
+	if (debugOLED) {
+    	generateMockValues();
+    } else {
+		recvWithStartEndMarkers();
+		if (newData == true) {
+			blickLED(10);
+			strcpy(tempChars, receivedChars);
+			parseData();
+			debugParsedData();
+			newData = false;
+		}
+    }
+
 	displayOLEDData();
-    if ( enterFunction ){
-    	previousTime = timet;
-    	if (blinkON) {
+    if ( enterFuncBlinkON ){
+    	previousTimeBlinkON = timet;
+    	if (blinkON){
     		blinkON = false ;
     	} else {
        		blinkON = true ;
     	}
     }
+
+    if (enterFuncCounterMock){
+    	previousTimeCounterMock = timet;
+    	voltCellTMOCK -= 0.10;
+    	if ( voltCellTMOCK <= 11.00 ) voltCellTMOCK = 12.60 ;
+    }
+
+    if (enterFuncCheckConnection){
+    	previousTimeCheckConnection = timet;
+    	validaComunicacao();
+    }
+
+    if (enterFuncCheckBateria){
+    	previousTimeCheckBateria = timet;
+    	validaBateria();
+    }
+
     checkTimet();
 
 }
 
 //============
 
-//void generateMockValues(){
-//
-//}
+void validaBateria(){
+	if ( (voltCellT <= voltPackMin[qtCell]) && (comunFailedCount < 50) ){
+		 tone(9,400);
+		 delay(50);
+		 noTone(9);
+	} else {
+		noTone(9);
+	}
+}
+
+void generateMockValues(){
+	qtCell = 3 ;
+	voltCell[1] = 3.80;
+	voltCell[2] = 4.00;
+	voltCell[3] = 4.20;
+	voltCellT = voltCellTMOCK ;
+}
 
 void checkTimet(){
 
-  if (timet - previousTime < _DELAY_){
-	  enterFunction = false;
+  if (timet - previousTimeBlinkON < _DELAY_){
+	  enterFuncBlinkON = false;
   }  else {
-	  enterFunction = true;
+	  enterFuncBlinkON = true;
   }
+
+  if (timet - previousTimeCounterMock < ( _DELAY_ * 4) ){
+	  enterFuncCounterMock = false;
+  } else {
+	  enterFuncCounterMock = true;
+  }
+
+  if (timet - previousTimeCheckConnection < ( _DELAY_ * 4) ){
+	  enterFuncCheckConnection = false;
+  } else {
+	  enterFuncCheckConnection = true;
+  }
+
+  if (timet - previousTimeCheckBateria < ( _DELAY_) ){
+	  enterFuncCheckBateria = false;
+  } else {
+	  enterFuncCheckBateria = true;
+  }
+
 }
 
 void displayOLEDData(){
@@ -144,10 +205,14 @@ void displayOLEDData(){
 	  display.setTextSize(3);
 	  display.setTextColor(WHITE);
 	  display.setCursor(0,10);
-	  display.print(" ");
 
+	  if (qtCell <= 2 ) {
+		  display.print("  ");
+	  } else {
+		  display.print(" ");
+	  }
 	  if ( voltCellT <= voltPackMin[qtCell]){
-
+		  Serial.print(batFraca);
 		  display.setTextColor(BLACK, WHITE);
 		  display.print(voltCellT);
 
@@ -170,21 +235,18 @@ void displayOLEDData(){
 }
 
 void validaComunicacao(){
-//	if (comunFailedCount > 1000) {
-//		Serial.print(comunFailedCount);
-//		tone(9,400);
-//		delay(500);
-//		noTone(9);
 
-//		for(int x=0;x<180;x++){
-//		  //converte graus para radiando e depois obtém o valor do seno
-//		  seno=(sin(x*3.1416/180));
-//		  //gera uma frequência a partir do valor do seno
-//		  frequencia = 2000+(int(seno*1000));
-//		  tone(9,frequencia);
-//		  delay(2);
-//		}
-//	}
+	if (comunFailedCount > 50) {
+		//Serial.print(comunFailedCount);
+		for(int x=0;x<180;x++){
+		  seno=(sin(x*3.1416/180));
+		  frequencia = 2000+(int(seno*1000));
+		  tone(9,frequencia);
+		  delay(2);
+		}
+	} else {
+		noTone(9);
+	}
 }
 
 void recvWithStartEndMarkers() {
