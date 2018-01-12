@@ -1,0 +1,18 @@
+/*
+ * Sweeper.cpp
+ *
+ *  Created on: 19 de abr de 2017
+ *      Author: erl
+ */
+
+#include "Sweeper.h"
+
+Sweeper::Sweeper() {
+	// TODO Auto-generated constructor stub
+
+}
+
+Sweeper::~Sweeper() {
+	// TODO Auto-generated destructor stub
+}
+

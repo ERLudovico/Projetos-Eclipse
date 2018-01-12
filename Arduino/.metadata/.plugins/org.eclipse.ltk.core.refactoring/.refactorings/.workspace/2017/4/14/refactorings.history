@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;TesteServoControle/build/Arduino UNO&apos;" deleteContents="false" description="Delete resource &apos;TesteServoControle/build/Arduino UNO&apos;" element1="/TesteServoControle/build/Arduino UNO" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1491599802869"/>
+</session>
