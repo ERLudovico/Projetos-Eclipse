@@ -9,6 +9,11 @@
 
 int qtCell = 0 ;
 byte pinCell[] 			= {   A0,    A2,    A3,    A6 } ;
+/*
+ * A2 - Cinza e Branco
+ * A3 - Laranja e Azul
+ * A6 - Cinza e Azul
+ */
 float volCell1 = 0.00;
 float volCell2 = 0.00;
 float volCell3 = 0.00;
