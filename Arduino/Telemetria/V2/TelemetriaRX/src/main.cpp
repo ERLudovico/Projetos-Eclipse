@@ -256,11 +256,11 @@ void displayOLEDData(){
 	  }
 
 	  if (comunFailedCount > 50) {
-		  if (blinkON) {
+		  //if (blinkON) {
 			  display.drawBitmap(44, 10,  myBitmapInverted, 40, 40, 1);
-		  } else {
-			  display.drawBitmap(44, 10,  myBitmapBitmap, 40, 40, 1);
-		  }
+		  //} else {
+			//  display.drawBitmap(44, 10,  myBitmapBitmap, 40, 40, 1);
+		  //}
 
 	  } else {
 		  if ( voltCellT <= voltPackMin[qtCell]){
