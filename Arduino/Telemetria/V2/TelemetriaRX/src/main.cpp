@@ -6,6 +6,7 @@
 
 #define _DELAY_ 250000
 #define OLED_RESET 4
+#define BIP_PIN	12
 Adafruit_SSD1306 display(OLED_RESET);
 
 void checkTimet();
@@ -17,6 +18,16 @@ void validaBateria();
 void validaComunicacao();
 void recvWithStartEndMarkers();
 void generateMockValues();
+void leBotao();
+void showBotao();
+void alertaLostConnection();
+
+// Tratando o botao
+int ledState = HIGH;         // the current state of the output pin
+int buttonState;             // the current reading from the input pin
+int lastButtonState = LOW;   // the previous reading from the input pin
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
 
 const byte numChars = 32;
 char receivedChars[numChars];
@@ -41,7 +52,9 @@ float seno;
 int frequencia;
 
 boolean blinkON = false ;
+boolean bipON = true ;
 
+boolean lostConnection = false ;
 int comunFailedCount = 0 ;
 unsigned long timet;
 unsigned long previousTimeBlinkON;
@@ -106,6 +119,9 @@ void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(9,OUTPUT);
 
+    pinMode(BIP_PIN, INPUT_PULLUP);
+
+
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     display.clearDisplay();
     display.display();
@@ -152,27 +168,67 @@ void loop() {
     if (enterFuncCheckConnection){
     	previousTimeCheckConnection = timet;
     	validaComunicacao();
+    	alertaLostConnection();
     }
 
     if (enterFuncCheckBateria){
     	previousTimeCheckBateria = timet;
     	validaBateria();
     }
-
+    leBotao();
     checkTimet();
 
 }
 
 //============
 
+
+
+void leBotao(){
+
+	int reading = digitalRead(BIP_PIN);
+	  if (reading != lastButtonState) {
+	    lastDebounceTime = millis();
+	  }
+
+	  if ((millis() - lastDebounceTime) > debounceDelay) {
+	    if (reading != buttonState) {
+	      buttonState = reading;
+	      if (buttonState == HIGH) {
+	        ledState = !ledState;
+			 if (bipON) {
+				 bipON = false ;
+			 } else {
+				 bipON = true ;
+			 }
+
+	      }
+	    }
+	  }
+
+	lastButtonState = reading;
+
+
+}
+
+void showBotao(){
+	  display.setTextSize(1);
+	  display.setTextColor(WHITE);
+	  display.setCursor(120,25);
+	  display.print("B");
+
+}
+
 void validaBateria(){
-	if ( (voltCellT <= voltPackMin[qtCell]) && (comunFailedCount < 50) ){
+
+	if ( (voltCellT <= voltPackMin[qtCell]) && (! lostConnection) && (bipON)) {//(comunFailedCount < 50) ){
 		 tone(9,400);
 		 delay(50);
 		 noTone(9);
 	} else {
 		noTone(9);
 	}
+
 }
 
 void generateMockValues(){
@@ -255,7 +311,7 @@ void displayOLEDData(){
 		  display.print(" ");
 	  }
 
-	  if (comunFailedCount > 50) {
+	  if (lostConnection) {
 		  //if (blinkON) {
 			  display.drawBitmap(44, 10,  myBitmapInverted, 40, 40, 1);
 		  //} else {
@@ -283,13 +339,22 @@ void displayOLEDData(){
 
 	  //display.print(voltCellT);
 
+	  if (bipON) showBotao();
 	  display.display();
 
 }
 
 void validaComunicacao(){
+	if (comunFailedCount >= 50){
+		lostConnection = true ;
+	} else {
+		lostConnection = false ;
+	}
+}
 
-	if (comunFailedCount > 50) {
+void alertaLostConnection(){
+
+	if (lostConnection && bipON) {
 		//Serial.print(comunFailedCount);
 		for(int x=0;x<180;x++){
 		  seno=(sin(x*3.1416/180));
