@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #define _DELAY_ 250000
-#define _NUMAMOSTRAS_ 10
+#define _NUMAMOSTRAS_ 100
 
 /*
  * Veriaveis
@@ -19,7 +19,7 @@ float volCell2 = 0.00;
 float volCell3 = 0.00;
 float volCellT = 0.00;
 float volCell[] 		= { 0.00,  0.00,  0.00,  0.00, 0,00 } ;
-float volCellOffset[] 	= { 0.00, 11.72, 10.90, 11.05 } ;
+float volCellOffset[] 	= { 0.00, 11.50, 10.85, 11.05 } ;
 String serialTrain ;
 
 static String CARAC_INICIO = "<" ;
