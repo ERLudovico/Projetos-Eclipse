@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #define _DELAY_ 250000
-#define _NUMAMOSTRAS_ 10
+#define _NUMAMOSTRAS_ 100
 
 /*
  * Veriaveis
@@ -9,12 +9,17 @@
 
 int qtCell = 0 ;
 byte pinCell[] 			= {   A0,    A2,    A3,    A6 } ;
+/*
+ * A2 - Cinza e Branco
+ * A3 - Laranja e Azul
+ * A6 - Cinza e Azul
+ */
 float volCell1 = 0.00;
 float volCell2 = 0.00;
 float volCell3 = 0.00;
 float volCellT = 0.00;
 float volCell[] 		= { 0.00,  0.00,  0.00,  0.00, 0,00 } ;
-float volCellOffset[] 	= { 0.00, 11.72, 10.90, 11.05 } ;
+float volCellOffset[] 	= { 0.00, 11.50, 10.85, 11.05 } ;
 String serialTrain ;
 
 static String CARAC_INICIO = "<" ;

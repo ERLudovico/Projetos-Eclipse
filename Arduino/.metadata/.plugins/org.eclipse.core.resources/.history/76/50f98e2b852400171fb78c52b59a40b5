@@ -1,0 +1,13 @@
+#include <Arduino.h>
+#include <Adafruit_PWMServoDriver.h>
+
+
+Adafruit_PWMServoDriver pwm1 = Adafruit_PWMServoDriver(0x40);
+
+void setup() {
+
+}
+
+void loop() {
+
+}
